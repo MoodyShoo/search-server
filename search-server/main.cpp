@@ -74,10 +74,10 @@ public:
     void AddDocument(int document_id, const string& document) {
         const vector<string> words = SplitIntoWordsNoStop(document);
         ++document_count_;
-        //Считаем TF каждого слова в документе
-        int n = static_cast<int>(words.size());
+
+        double tf = CalculateTF(words.size());
         for (const auto& word : words) {
-            word_to_documents_freq_[word][document_id] += 1. / n;
+            word_to_documents_freq_[word][document_id] += tf;
         }
     }
 
@@ -123,16 +123,23 @@ private:
         return query_words;
     }
 
+    double CalculateTF(int word_amount) {
+        return 1. / word_amount;
+    }
+
+    double CalculateIDF(const string& word_in_query) const {
+        int word_amount = word_to_documents_freq_.at(word_in_query).size();
+        return log(static_cast<double>(document_count_) / word_amount);
+    }
+
     vector<Document> FindAllDocuments(const Query& query_words) const {
         vector<Document> matched_documents;
         map<int, double> document_to_relevance;
-        double idf = 0;
 
         for (const auto& word_in_query : query_words.plus_words) {
             if (word_to_documents_freq_.count(word_in_query)) {
 
-                int word_amount = word_to_documents_freq_.at(word_in_query).size();
-                idf = log((double)document_count_ / word_amount);
+                double  idf = CalculateIDF(word_in_query);
 
                 for (const auto& word_in_document : word_to_documents_freq_.at(word_in_query)) {
                     int id = word_in_document.first;
