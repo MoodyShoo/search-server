@@ -75,9 +75,9 @@ public:
         const vector<string> words = SplitIntoWordsNoStop(document);
         ++document_count_;
 
-        double tf = CalculateTF(words.size());
+        double word_freq = CalculateWordFreq(words.size());
         for (const auto& word : words) {
-            word_to_documents_freq_[word][document_id] += tf;
+            word_to_documents_freq_[word][document_id] += word_freq;
         }
     }
 
@@ -123,7 +123,7 @@ private:
         return query_words;
     }
 
-    double CalculateTF(int word_amount) {
+    double CalculateWordFreq(int word_amount) {
         return 1. / word_amount;
     }
 
