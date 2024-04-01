@@ -233,12 +233,12 @@ private:
     QueryWord ParseQueryWord(string text) const {
         bool is_minus = false;
         // Word shouldn't be empty
-        if (text[0] == '-' && text.size() > 1) {
+        if (text[0] == '-' && text.size()) {
             is_minus = true;
             text = text.substr(1);
         }
 
-        if (text == "-"s || CheckForTwoMinuses(text) || !IsValidWord(text)){
+        if (text[0] == '-' || !IsValidWord(text) || text.empty()){
             throw invalid_argument("В запросе есть ошибка");
         }
 
@@ -314,3 +314,20 @@ private:
         return matched_documents;
     }
 };
+
+int main(){
+    SearchServer server("и в на"s);
+    try {
+        server.AddDocument(0, "Тестовый один"s, DocumentStatus::ACTUAL, {1, 2, 3});
+        server.AddDocument(1, "Тестовый два"s, DocumentStatus::ACTUAL, {3, 2, 1});
+        // const auto found = server.FindTopDocuments("од-ин"s);
+        // const auto found = server.FindTopDocuments("-од-ин"s);
+        // const auto found = server.FindTopDocuments("---од-ин"s);
+        const auto found = server.FindTopDocuments("один -"s);
+        for (const auto& docum : found){
+            cout << docum.id << ", "s << docum.rating << ", "s << docum.relevance << endl;
+        }
+    } catch(invalid_argument& e) {
+        cout << e.what() << endl;
+    }
+}
