@@ -233,7 +233,7 @@ private:
     QueryWord ParseQueryWord(string text) const {
         bool is_minus = false;
         // Word shouldn't be empty
-        if (text[0] == '-' && text.size()) {
+        if (text[0] == '-') {
             is_minus = true;
             text = text.substr(1);
         }
