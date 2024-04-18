@@ -4,6 +4,8 @@
 
 using namespace std::string_literals;
 
+SearchServer::SearchServer(const std::string& stop_words_text) : SearchServer(SplitIntoWords(stop_words_text)) {};
+
 void SearchServer::AddDocument(int document_id, const std::string& document, DocumentStatus status, const std::vector<int>& ratings) {
     const std::vector<std::string> words = SplitIntoWordsNoStop(document);
 
@@ -22,6 +24,18 @@ void SearchServer::AddDocument(int document_id, const std::string& document, Doc
 
     document_id_by_add_order.push_back(document_id);
     documents_.emplace(document_id, DocumentData{ ComputeAverageRating(ratings), status });
+}
+
+std::vector<Document> SearchServer::FindTopDocuments(const std::string& raw_query, DocumentStatus status) const {
+    return FindTopDocuments(
+        raw_query, [status](int document_id, DocumentStatus document_status, int rating) {
+            return document_status == status;
+        }
+    );
+}
+
+std::vector<Document> SearchServer::FindTopDocuments(const std::string& raw_query) const {
+    return FindTopDocuments(raw_query, DocumentStatus::ACTUAL);
 }
 
 size_t SearchServer::GetDocumentCount() const {

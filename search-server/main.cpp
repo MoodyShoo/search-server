@@ -1,8 +1,6 @@
 #include "search_server.h"
 #include "request_queue.h"
 #include "paginator.h"
-#include <iostream>
-#include <set>
 
 using namespace std;
 
@@ -25,5 +23,14 @@ int main() {
     // первый запрос удален, 1437 запросов с нулевым результатом
     request_queue.AddFindRequest("sparrow"s);
     std::cout << "Total empty requests: "s << request_queue.GetNoResultRequests() << std::endl;
+
+    const auto search_results = search_server.FindTopDocuments("curly dog"s);
+    const auto pages = Paginate(search_results, 2);
+    
+    for (auto page = pages.begin(); page != pages.end(); ++page) {
+        cout << *page << endl;
+        cout << "Page break"s << endl;
+    }
+    
     return 0;
 }
