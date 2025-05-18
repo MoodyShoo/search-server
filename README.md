@@ -1,2 +1,2 @@
-# cpp-search-server
+# search-server
 Финальный проект: поисковый сервер
